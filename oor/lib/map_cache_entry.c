@@ -34,7 +34,7 @@ mcache_entry_new()
 
     mce->active = NOT_ACTIVE;
     mce->timestamp = time(NULL);
-
+    mce->last_req_time = time(NULL);
     return(mce);
 }
 
@@ -69,6 +69,10 @@ mcache_entry_del(mcache_entry_t *entry)
     stop_timers_from_obj(entry,ptrs_to_timers_ht, nonces_ht);
 
     mapping_del(mcache_entry_mapping(entry));
+
+    if (entry->requester != NULL){
+        lisp_addr_del(entry->requester);
+    }
 
     if (entry->routing_info != NULL){
         entry->routing_inf_del(entry->routing_info);

@@ -51,11 +51,13 @@ typedef struct map_cache_entry_ {
     /* TRUE if we have received a map reply for this entry */
     uint8_t active;
     uint8_t active_witin_period;
-    time_t timestamp;
+    time_t timestamp; /* Time the entry was created */
 
     /* Routing info */
     void *                  routing_info;
     routing_info_del_fct    routing_inf_del;
+
+    time_t last_req_time; /* Last time the entry has been requested by the data plane */
 
     /* EID that requested the mapping. Helps with timers */
     lisp_addr_t *requester;
@@ -128,5 +130,28 @@ mcache_entry_set_routing_info(mcache_entry_t *m, void *routing_inf, routing_info
     m->routing_inf_del = del_fct;
 }
 
+static inline lisp_addr_t *
+mcache_entry_requester_eid(mcache_entry_t *m)
+{
+    return (m->requester);
+}
+
+static inline void
+mcache_entry_set_requester_eid(mcache_entry_t *m, lisp_addr_t *addr)
+{
+    m->requester = lisp_addr_clone(addr);
+}
+
+static inline time_t
+mcache_entry_last_req_time(mcache_entry_t *m)
+{
+    return (m->last_req_time);
+}
+
+static inline void
+mcache_entry_set_last_req_time(mcache_entry_t *m, time_t time)
+{
+    m->last_req_time = time;
+}
 
 #endif /* MAP_CACHE_ENTRY_H_ */

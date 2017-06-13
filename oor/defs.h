@@ -67,6 +67,9 @@ typedef struct htable_nonces_ htable_nonces_t;
 #define OOR_MAX_RETRANSMITS           5  // Maximum amount of retransmits of a message
 #define OOR_MIN_RETRANSMIT_INTERVAL   1  // Minimum time between retransmits of control messages
 
+#define OOR_ACTIVE_MAPPING_TIMEOUT    60 // A map cache entry is considered not active if no packet is sent to
+                                         // this mapping during this period time
+
 
 #define DEFAULT_MAP_REQUEST_RETRIES             3
 
