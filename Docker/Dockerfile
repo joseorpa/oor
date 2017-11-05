@@ -5,4 +5,4 @@ COPY files/*.conf /etc/
 COPY files/*.sh /tmp/
 ENV IPV4EID ERROR
 ENV IPV6EID ERROR
-CMD /tmp/start.sh IPV4EID IPV6EID
+CMD /tmp/start.sh $IPV4EID $IPV6EID
