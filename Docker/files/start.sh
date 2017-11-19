@@ -15,5 +15,6 @@ sed -i s/IPPROXYETRV4/$6/g /tmp/oor.yaml
 sed -i s/IPPROXYETRV6/$7/g /tmp/oor.yaml
 sed -i s/IPV4EIDPREFFIX/$8/g /tmp/oor.yaml
 sed -i s/IPV6EIDPREFFIX/$9/g /tmp/oor.yaml
-#ansible-playbook oor.yaml
-#oor -f /etc/oor.conf
+ansible-playbook /tmp/oor.yaml
+ansible all -m lineinfile -a "dest=/etc/oor.conf state=absent regexp='^<'"
+oor -f /etc/oor.conf
