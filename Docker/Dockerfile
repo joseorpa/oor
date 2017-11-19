@@ -1,6 +1,5 @@
 FROM jortizpa/oor-req:latest
 MAINTAINER jose.orpa@gmail.com
-RUN apt-get update && apt-get install software-properties-common && apt-add-repository ppa:ansible/ansible && apt-get update && apt-get install ansible && apt-get autoremove
 RUN echo 'net.ipv4.conf.default.rp_filter=0' >> /etc/sysctl.conf
 RUN echo 'net.ipv4.conf.all.rp_filter=0' >> /etc/sysctl.conf
 RUN echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
