@@ -41,9 +41,9 @@
 #include "control/lisp_ms.h"
 #include "data-plane/data-plane.h"
 #include "net_mgr/net_mgr.h"
+#include "lib/htable_ptrs.h"
 #include "lib/oor_log.h"
 #include "lib/nonces_table.h"
-#include "lib/pointers_table.h"
 #include "lib/sockets.h"
 #include "lib/timers.h"
 #include "lib/routing_tables_lib.h"
@@ -93,8 +93,8 @@ int oor_running;
 oor_api_connection_t oor_api_connection;
 #endif
 
-htable_nonces_t *nonces_ht;
-htable_ptrs_t *ptrs_to_timers_ht;
+htable_nonces_t *nonces_ht; //<uint64_t, oor_timer_t>
+htable_ptrs_t *ptrs_to_timers_ht; //<pointer, glist_t of timers>
 
 /**************************** FUNCTION DECLARATION ***************************/
 /* Check if oor is already running: /var/run/oor.pid */
@@ -439,7 +439,7 @@ int
 main(int argc, char **argv)
 {
     oor_dev_type_e dev_type;
-    lisp_xtr_t *tunnel_router;
+    tr_abstract_device *tunnel_router;
 
     if (initial_setup() != GOOD){
         exit(EXIT_SUCCESS);
@@ -477,8 +477,8 @@ main(int argc, char **argv)
 #endif
     if (dev_type == xTR_MODE || dev_type == RTR_MODE || dev_type == MN_MODE) {
         OOR_LOG(LDBG_2, "Configuring data plane");
-        tunnel_router = CONTAINER_OF(ctrl_dev, lisp_xtr_t, super);
-        if (data_plane->datap_init(dev_type,tr_get_encap_type(tunnel_router))!=GOOD){
+        tunnel_router = lisp_tr_abstract_cast(ctrl_dev);
+        if (data_plane->datap_init(dev_type,tr_encap_type(&tunnel_router->tr))!=GOOD){
             data_plane = NULL;
             exit_cleanup();
         }
@@ -568,8 +568,8 @@ JNIEXPORT jint JNICALL Java_org_openoverlayrouter_noroot_OOR_1JNI_oor_1start
     dev_type = ctrl_dev_mode(ctrl_dev);
     if (dev_type == xTR_MODE || dev_type == RTR_MODE || dev_type == MN_MODE) {
         OOR_LOG(LDBG_2, "Configuring data plane");
-        tunnel_router = CONTAINER_OF(ctrl_dev, lisp_xtr_t, super);
-        if (data_plane->datap_init(dev_type, tr_get_encap_type(tunnel_router), vpn_tun_fd) != GOOD){
+        tunnel_router = lisp_tr_abstract_cast(ctrl_dev);
+        if (data_plane->datap_init(dev_type, tr_encap_type(tunnel_router), vpn_tun_fd) != GOOD){
             data_plane = NULL;
             return (BAD);
         }
