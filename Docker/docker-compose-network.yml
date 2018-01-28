@@ -9,38 +9,41 @@ services:
       - "/dev/net/tun:/dev/net/tun"
     networks:
       0rloc:
-          ipv4_address: <ip>
+          ipv4_address: 10.0.1.3
       1eids:
-          ipv4_address: <ip>
+          ipv4_address: 192.168.1.3
     environment:
-      - IPV4EIDPREFFIX="<network>\/<mask>"
-      - IPV6EIDPREFFIX="<network>\/<mask>"
+      - IPMAPRESOLVER="10.0.1.1"
+      - IPMAPSERVER="10.0.1.1"
+      - IPV4EIDPREFFIX="192.168.1.0\/24"
+      - IPV6EIDPREFFIX="2610:D0:2231:1::\/64"
       - DEBUG="3"
-      - OPMODE="xTR"
-      - IPMAPRESOLVER=<IP of the MapResolver>
-      - IPMAPSERVER=<IP of the MapServer>
-      - KEYMAPSERVER=<String>
-      - IPPROXYETRV4=<IP of the Proxy ETR IPv4>
-      - IPPROXYETRV6=<IP of the Proxy ETR IPv6>
-      - IPV4EIDPREFFIX=<EID IPv4 Preffix>
-      - IPV6EIDPREFFIX=<EID IPv6 Preffix>
+      - KEYMAPSERVER="lispmob"
+      - IPPROXYETRV4="193.162.145.46"
+      - IPPROXYETRV6="193.162.145.46"
+    restart: on-failure
+  watchtower:
+    image: v2tec/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --interval 30 jortiz_oor_1
 
 networks:
-  1eids:
-    driver: macvlan
-    ipam:
-      driver: default
-      config:
-      - subnet: <EID IPv4 Preffix>
-    driver_opts:
-      parent: <linux host interface>
-      macvlan_mode: bridge
   0rloc:
     driver: macvlan
     ipam:
       driver: default
       config:
-      - subnet: <RLOC Subnet>
+      - subnet: 10.0.1.0/24
     driver_opts:
-      parent: <linux host interface>
+      parent: ens224
+      macvlan_mode: bridge
+  1eids:
+    driver: macvlan
+    ipam:
+      driver: default
+      config:
+      - subnet: 192.168.1.0/24
+    driver_opts:
+      parent: ens192
       macvlan_mode: bridge
